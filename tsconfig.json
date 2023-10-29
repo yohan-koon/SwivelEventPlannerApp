@@ -15,7 +15,10 @@
     "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "paths": {
+      "react": ["./node_modules/@types/react"],
+    }
   },
   "exclude": ["node_modules"],
   "include": ["index.js", "App.js", "app", "test", "*.js"],
