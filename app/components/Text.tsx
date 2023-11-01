@@ -3,6 +3,7 @@ import React from "react"
 import { StyleProp, Text as RNText, TextProps as RNTextProps, TextStyle } from "react-native"
 import { isRTL, translate, TxKeyPath } from "../i18n"
 import { colors, typography } from "../theme"
+import { ms } from "app/utils/ui"
 
 type Sizes = keyof typeof $sizeStyles
 type Weights = keyof typeof typography.primary
@@ -73,13 +74,13 @@ export function Text(props: TextProps) {
 }
 
 const $sizeStyles = {
-  xxl: { fontSize: 36, lineHeight: 44 } satisfies TextStyle,
-  xl: { fontSize: 24, lineHeight: 34 } satisfies TextStyle,
-  lg: { fontSize: 20, lineHeight: 32 } satisfies TextStyle,
-  md: { fontSize: 18, lineHeight: 26 } satisfies TextStyle,
-  sm: { fontSize: 16, lineHeight: 24 } satisfies TextStyle,
-  xs: { fontSize: 14, lineHeight: 21 } satisfies TextStyle,
-  xxs: { fontSize: 12, lineHeight: 18 } satisfies TextStyle,
+  xxl: { fontSize: ms(32), lineHeight: ms(40) } satisfies TextStyle,
+  xl: { fontSize: ms(26), lineHeight: ms(36) } satisfies TextStyle,
+  lg: { fontSize: ms(22), lineHeight: ms(32) } satisfies TextStyle,
+  md: { fontSize: ms(19), lineHeight: ms(24) } satisfies TextStyle,
+  sm: { fontSize: ms(16), lineHeight: ms(20) } satisfies TextStyle,
+  xs: { fontSize: ms(14), lineHeight: ms(20) } satisfies TextStyle,
+  xxs: { fontSize: ms(13), lineHeight: ms(16) } satisfies TextStyle,
 }
 
 const $fontWeightStyles = Object.entries(typography.primary).reduce((acc, [weight, fontFamily]) => {
@@ -87,21 +88,27 @@ const $fontWeightStyles = Object.entries(typography.primary).reduce((acc, [weigh
 }, {}) as Record<Weights, TextStyle>
 
 const $baseStyle: StyleProp<TextStyle> = [
-  $sizeStyles.sm,
+  $sizeStyles.xs,
   $fontWeightStyles.normal,
-  { color: colors.text },
+  { color: colors.textDim },
 ]
 
 const $presets = {
   default: $baseStyle,
 
-  bold: [$baseStyle, $fontWeightStyles.bold] as StyleProp<TextStyle>,
+  bold: [$baseStyle, $fontWeightStyles.semiBold] as StyleProp<TextStyle>,
 
-  heading: [$baseStyle, $sizeStyles.xxl, $fontWeightStyles.bold] as StyleProp<TextStyle>,
+  h1: [$baseStyle, $sizeStyles.xxl, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
 
-  subheading: [$baseStyle, $sizeStyles.lg, $fontWeightStyles.medium] as StyleProp<TextStyle>,
+  h2: [$baseStyle, $sizeStyles.xl, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
 
-  formLabel: [$baseStyle, $fontWeightStyles.medium] as StyleProp<TextStyle>,
+  h3: [$baseStyle, $sizeStyles.lg, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
+
+  h4: [$baseStyle, $sizeStyles.md, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
+
+  h5: [$baseStyle, $sizeStyles.sm, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
+
+  formLabel: [$baseStyle, $sizeStyles.xxs, $fontWeightStyles.medium, {color: colors.palette.neutral700}] as StyleProp<TextStyle>,
 
   formHelper: [$baseStyle, $sizeStyles.sm, $fontWeightStyles.normal] as StyleProp<TextStyle>,
 }

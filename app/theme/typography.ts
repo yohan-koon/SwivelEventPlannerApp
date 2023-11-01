@@ -2,48 +2,56 @@
 // markdown file and add links from here
 
 import { Platform } from "react-native"
+
 import {
-  SpaceGrotesk_300Light as spaceGroteskLight,
-  SpaceGrotesk_400Regular as spaceGroteskRegular,
-  SpaceGrotesk_500Medium as spaceGroteskMedium,
-  SpaceGrotesk_600SemiBold as spaceGroteskSemiBold,
-  SpaceGrotesk_700Bold as spaceGroteskBold,
-} from "@expo-google-fonts/space-grotesk"
+  NotoSans_300Light as notoSansLight,
+  NotoSans_400Regular as notoSansRegular,
+  NotoSans_500Medium as notoSansMedium,
+  NotoSans_600SemiBold as notoSansSemiBold,
+  NotoSans_700Bold as notoSansBold,
+} from "@expo-google-fonts/noto-sans"
+
+import {
+  Inter_300Light as interLight,
+  Inter_400Regular as interRegular,
+  Inter_500Medium as interMedium,
+  Inter_600SemiBold as interSemiBold,
+  Inter_700Bold as interBold,
+} from "@expo-google-fonts/inter"
 
 export const customFontsToLoad = {
-  spaceGroteskLight,
-  spaceGroteskRegular,
-  spaceGroteskMedium,
-  spaceGroteskSemiBold,
-  spaceGroteskBold,
+  notoSansLight,
+  notoSansRegular,
+  notoSansMedium,
+  notoSansSemiBold,
+  notoSansBold,
+  interLight,
+  interRegular,
+  interMedium,
+  interSemiBold,
+  interBold
 }
 
 const fonts = {
-  spaceGrotesk: {
+  notoSans: {
     // Cross-platform Google font.
-    light: "spaceGroteskLight",
-    normal: "spaceGroteskRegular",
-    medium: "spaceGroteskMedium",
-    semiBold: "spaceGroteskSemiBold",
-    bold: "spaceGroteskBold",
+    light: "notoSansLight",
+    normal: "notoSansRegular",
+    medium: "notoSansMedium",
+    semiBold: "notoSansSemiBold",
+    bold: "notoSansBold",
   },
-  helveticaNeue: {
-    // iOS only font.
-    thin: "HelveticaNeue-Thin",
-    light: "HelveticaNeue-Light",
-    normal: "Helvetica Neue",
-    medium: "HelveticaNeue-Medium",
+  inter: {
+    // Cross-platform Google font.
+    light: "interLight",
+    normal: "interRegular",
+    medium: "interMedium",
+    semiBold: "interSemiBold",
+    bold: "interBold",
   },
   courier: {
     // iOS only font.
     normal: "Courier",
-  },
-  sansSerif: {
-    // Android only font.
-    thin: "sans-serif-thin",
-    light: "sans-serif-light",
-    normal: "sans-serif",
-    medium: "sans-serif-medium",
   },
   monospace: {
     // Android only font.
@@ -59,11 +67,11 @@ export const typography = {
   /**
    * The primary font. Used in most places.
    */
-  primary: fonts.spaceGrotesk,
+  primary: fonts.notoSans,
   /**
    * An alternate font used for perhaps titles and stuff.
    */
-  secondary: Platform.select({ ios: fonts.helveticaNeue, android: fonts.sansSerif }),
+  secondary: fonts.inter,
   /**
    * Lets get fancy with a monospace font!
    */

@@ -11,6 +11,7 @@ import {
 import { isRTL, translate } from "../i18n"
 import { colors, spacing, typography } from "../theme"
 import { Text, TextProps } from "./Text"
+import { vs, ms } from "app/utils/ui"
 
 export interface TextFieldAccessoryProps {
   style: StyleProp<any>
@@ -236,10 +237,9 @@ const $labelStyle: TextStyle = {
 const $inputWrapperStyle: ViewStyle = {
   flexDirection: "row",
   alignItems: "flex-start",
-  borderWidth: 1,
-  borderRadius: 4,
-  backgroundColor: colors.palette.neutral200,
-  borderColor: colors.palette.neutral400,
+  borderBottomWidth: vs(0.2),
+  backgroundColor: colors.palette.primary100,
+  borderColor: colors.border,
   overflow: "hidden",
 }
 
@@ -248,8 +248,8 @@ const $inputStyle: TextStyle = {
   alignSelf: "stretch",
   fontFamily: typography.primary.normal,
   color: colors.text,
-  fontSize: 16,
-  height: 24,
+  fontSize: ms(14),
+  height: vs(24),
   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
   paddingVertical: 0,
   paddingHorizontal: 0,
@@ -263,13 +263,13 @@ const $helperStyle: TextStyle = {
 
 const $rightAccessoryStyle: ViewStyle = {
   marginEnd: spacing.xs,
-  height: 40,
+  height: vs(40),
   justifyContent: "center",
   alignItems: "center",
 }
 const $leftAccessoryStyle: ViewStyle = {
   marginStart: spacing.xs,
-  height: 40,
+  height: vs(40),
   justifyContent: "center",
   alignItems: "center",
 }
