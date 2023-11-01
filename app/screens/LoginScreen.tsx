@@ -1,147 +1,175 @@
+import React, { FC, useCallback, useRef, useState } from "react"
 import { observer } from "mobx-react-lite"
-import React, { FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle } from "react-native"
-import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
-import { useStores } from "../models"
-import { AppStackScreenProps } from "../navigators"
-import { colors, spacing } from "../theme"
+import { ViewStyle, View, TextStyle } from "react-native"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { AppStackScreenProps } from "app/navigators"
+import {
+  Button,
+  ButtonAccessoryProps,
+  Icon,
+  LinkButton,
+  LinkButtonAccessoryProps,
+  Screen,
+  Spacer,
+  Text,
+  TextField,
+  TextFieldAccessoryProps,
+  TextFieldProps,
+} from "app/components"
+import { spacing, typography } from "app/theme"
+import { ms } from "../utils/ui"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import { Formik } from "formik"
+// import { useNavigation } from "@react-navigation/native"
+// import { useStores } from "app/models"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
+interface LoginScreenProps extends NativeStackScreenProps<AppStackScreenProps<"Login">> {}
+interface LoginFormValues {
+  email: string
+  password: string
+}
 
-export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
-  const authPasswordInput = useRef<TextInput>()
+export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen() {
+  // Pull in one of our MST stores
+  // const { someStore, anotherStore } = useStores()
 
-  const [authPassword, setAuthPassword] = useState("")
-  const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [attemptsCount, setAttemptsCount] = useState(0)
-  const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
-  } = useStores()
+  // Pull in navigation via hook
+  // const navigation = useNavigation()
 
-  useEffect(() => {
-    // Here is where you could fetch credentials from keychain or storage
-    // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
-  }, [])
+  const passwordRef = useRef(null)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
-  const error = isSubmitted ? validationError : ""
-
-  function login() {
-    setIsSubmitted(true)
-    setAttemptsCount(attemptsCount + 1)
-
-    if (validationError) return
-
-    // Make a request to your server to get an authentication token.
-    // If successful, reset the fields and set the token.
-    setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
-
-    // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+  const initialFormValues: LoginFormValues = {
+    email: "",
+    password: "",
   }
 
-  const PasswordRightAccessory = useMemo(
-    () =>
-      function PasswordRightAccessory(props: TextFieldAccessoryProps) {
-        return (
-          <Icon
-            icon={isAuthPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
-            containerStyle={props.style}
-            size={20}
-            onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
-          />
-        )
-      },
-    [isAuthPasswordHidden],
+  //Email Icon for Email TextField
+  const EmailLeftAccessory: FC<TextFieldAccessoryProps> = useCallback(
+    (props) => <Icon icon="mail" size={ms(18)} {...props} />,
+    [],
+  )
+  //Password Icon for Password TextField
+  const PasswordLeftAccessory: FC<TextFieldAccessoryProps> = useCallback(
+    (props) => <Icon icon="lock" size={ms(15)} {...props} />,
+    [],
+  )
+  //ClosedEye / Eye Icon for Password TextField
+  const PasswordRightAccessory: FC<TextFieldAccessoryProps> = useCallback(
+    (props) => (
+      <TouchableOpacity onPress={togglePasswordVisibility}>
+        <Icon icon={isPasswordVisible ? "eye" : "closedEye"} size={ms(15)} {...props} />
+      </TouchableOpacity>
+    ),
+    [isPasswordVisible],
+  )
+  //Open Icon for Restore Password LinkButton
+  const RestorePasswordRightAccessory: FC<LinkButtonAccessoryProps> = useCallback(
+    (props) => <Icon icon="open" size={ms(10)} {...props} />,
+    [],
+  )
+  //Next Icon for Login and SignUp Buttons
+  const ButtonRightAccessory: FC<ButtonAccessoryProps> = useCallback(
+    (props) => <Icon icon="next" size={ms(13.5)} {...props} />,
+    [],
   )
 
-  useEffect(() => {
-    return () => {
-      setAuthPassword("")
-      setAuthEmail("")
-    }
-  }, [])
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible)
+  }
 
   return (
     <Screen
-      preset="auto"
-      contentContainerStyle={$screenContentContainer}
-      safeAreaEdges={["top", "bottom"]}
+      style={$root}
+      contentContainerStyle={$contentContainer}
+      preset="scroll"
+      safeAreaEdges={["top"]}
     >
-      <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
-      <Text tx="loginScreen.enterDetails" preset="subheading" style={$enterDetails} />
-      {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
-
-      <TextField
-        value={authEmail}
-        onChangeText={setAuthEmail}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="loginScreen.emailFieldLabel"
-        placeholderTx="loginScreen.emailFieldPlaceholder"
-        helper={error}
-        status={error ? "error" : undefined}
-        onSubmitEditing={() => authPasswordInput.current?.focus()}
-      />
-
-      <TextField
-        ref={authPasswordInput}
-        value={authPassword}
-        onChangeText={setAuthPassword}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen.passwordFieldLabel"
-        placeholderTx="loginScreen.passwordFieldPlaceholder"
-        onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory}
-      />
-
-      <Button
-        testID="login-button"
-        tx="loginScreen.tapToSignIn"
-        style={$tapButton}
-        preset="reversed"
-        onPress={login}
-      />
+      <Formik initialValues={initialFormValues} onSubmit={(values) => console.log({values})}>
+        {({ handleChange, handleBlur, handleSubmit, values }) => (
+          <>
+            <View style={$topContainer}>
+              <View style={$titleContainer}>
+                <Text preset="h1" tx="loginScreen.title" />
+                <Spacer mainAxisSize={spacing.sm} />
+                <Text tx="loginScreen.subTitle" />
+              </View>
+              <View style={$formContainer}>
+                <TextField
+                  labelTx="loginScreen.emailLabel"
+                  textContentType="emailAddress"
+                  LeftAccessory={EmailLeftAccessory}
+                  keyboardType="email-address"
+                  returnKeyType="next"
+                  onSubmitEditing={() => {passwordRef.current?.focus()}}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  value={values.email}
+                />
+                <Spacer mainAxisSize={spacing.md} />
+                <TextField
+                  ref={passwordRef}
+                  labelTx="loginScreen.passwordLabel"
+                  secureTextEntry={!isPasswordVisible}
+                  textContentType="password"
+                  LeftAccessory={PasswordLeftAccessory}
+                  RightAccessory={PasswordRightAccessory}
+                  returnKeyType="done"
+                  onSubmitEditing={() => {handleSubmit()}}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  value={values.password}
+                />
+                <Spacer mainAxisSize={spacing.lg} />
+                <LinkButton
+                  style={$restorePasswordContainer}
+                  tx="loginScreen.restorePassword"
+                  RightAccessory={RestorePasswordRightAccessory}
+                />
+              </View>
+            </View>
+            <View style={$bottomContainer}>
+              <Button
+                tx="loginScreen.loginBtn"
+                RightAccessory={ButtonRightAccessory}
+                onPress={() => handleSubmit()}
+              />
+              <Spacer mainAxisSize={spacing.md} />
+              <Button tx="loginScreen.signUpBtn" RightAccessory={ButtonRightAccessory} />
+            </View>
+          </>
+        )}
+      </Formik>
     </Screen>
   )
 })
 
-const $screenContentContainer: ViewStyle = {
-  paddingVertical: spacing.xxl,
-  paddingHorizontal: spacing.lg,
+const $root: ViewStyle = {
+  flex: 1,
+  paddingHorizontal: spacing.md,
 }
 
-const $signIn: TextStyle = {
-  marginBottom: spacing.sm,
+const $contentContainer: ViewStyle = {
+  flex: 1,
 }
 
-const $enterDetails: TextStyle = {
-  marginBottom: spacing.lg,
+const $topContainer: ViewStyle = {
+  flex: 3,
+  justifyContent: "center",
 }
 
-const $hint: TextStyle = {
-  color: colors.tint,
-  marginBottom: spacing.md,
+const $titleContainer: ViewStyle = {
+  alignItems: "center",
 }
 
-const $textField: ViewStyle = {
-  marginBottom: spacing.lg,
+const $formContainer: ViewStyle = {
+  marginTop: spacing.xl,
 }
 
-const $tapButton: ViewStyle = {
-  marginTop: spacing.xs,
+const $restorePasswordContainer: ViewStyle = {
+  alignSelf: "flex-end",
 }
 
-// @demo remove-file
+const $bottomContainer: ViewStyle = {
+  flex: 1,
+}
