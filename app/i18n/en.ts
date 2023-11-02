@@ -3,6 +3,7 @@ const en = {
     ok: "OK!",
     cancel: "Cancel",
     back: "Back",
+    next: "Next",
   },
   welcomeScreen: {
     postscript:
@@ -31,6 +32,28 @@ const en = {
     emailLabel: "Email",
     passwordLabel: "Password",
     restorePassword: "Restore password",
+  },
+  signUpScreen: {
+    title: "Sign Up",
+    subTitle: "Welcome to your Portal",
+    signUpBtn: "Sign Up",
+    loginBtn: "Login",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    confirmPasswordLabel: "Confirm Password",
+  },
+  commonValidations: {
+    required: "{{fieldName}} is Required",
+    email: "Email is invalid",
+    password: "Password is invalid",
+    confirmPassword: "Passwords do not match",
+    passwordsDoNotMatch: "Passwords do not match",
+    minLength: "{{fieldName}} must be at least {{min}} characters",
+    maxLength: "{{fieldName}} must be at most {{max}} characters",
+  },
+  profileImageUploadScreen: {
+    title: "Welcome",
+    subTitle: "You are logged in for the first time and can upload a profile photo",
   }
 }
 

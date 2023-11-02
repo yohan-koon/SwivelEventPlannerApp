@@ -110,7 +110,7 @@ const $presets = {
 
   formLabel: [$baseStyle, $sizeStyles.xxs, $fontWeightStyles.medium, {color: colors.palette.neutral700}] as StyleProp<TextStyle>,
 
-  formHelper: [$baseStyle, $sizeStyles.sm, $fontWeightStyles.normal] as StyleProp<TextStyle>,
+  formHelper: [$baseStyle, $sizeStyles.xxs, $fontWeightStyles.normal] as StyleProp<TextStyle>,
 }
 
 const $rtlStyle: TextStyle = isRTL ? { writingDirection: "rtl" } : {}

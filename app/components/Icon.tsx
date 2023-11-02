@@ -113,6 +113,7 @@ export const iconRegistry = {
   closedEye: require("../../assets/icons/closed-eye.png"),
   eye: require("../../assets/icons/eye.png"),
   mail: require("../../assets/icons/mail.png"),
+  camera: require("../../assets/icons/camera.png"),
 }
 
 const $imageStyle: ImageStyle = {

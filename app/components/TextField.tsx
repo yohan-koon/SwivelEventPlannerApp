@@ -114,7 +114,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     helper,
     helperTx,
     helperTxOptions,
-    status,
+    status = "error",
     RightAccessory,
     LeftAccessory,
     HelperTextProps,

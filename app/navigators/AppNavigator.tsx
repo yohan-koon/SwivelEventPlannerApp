@@ -8,15 +8,16 @@ import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
+  NavigatorScreenParams,
 } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
 import React from "react"
 import { useColorScheme } from "react-native"
-import * as Screens from "app/screens"
 import Config from "../config"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { colors } from "app/theme"
+import { OnboardingNavigator, OnboardingNavigatorParamList } from "./OnboardingNavigator"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -33,7 +34,7 @@ import { colors } from "app/theme"
  */
 export type AppStackParamList = {
   // 🔥 Your screens go here
-  Login: undefined
+  Onboarding: NavigatorScreenParams<OnboardingNavigatorParamList>
 	// IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
@@ -57,7 +58,7 @@ const AppStack = observer(function AppStack() {
       screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
     >
       {/** 🔥 Your screens go here */}
-      <Stack.Screen name="Login" component={Screens.LoginScreen} />
+			<Stack.Screen name="Onboarding" component={OnboardingNavigator} />
 			{/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
