@@ -87,7 +87,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen()
       style={$root}
       contentContainerStyle={$contentContainer}
       preset="scroll"
-      safeAreaEdges={["top"]}
+      safeAreaEdges={["top", "bottom"]}
     >
       <Formik initialValues={initialFormValues} onSubmit={(values) => {
         console.log({ values })

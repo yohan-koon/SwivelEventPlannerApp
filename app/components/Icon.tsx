@@ -114,6 +114,8 @@ export const iconRegistry = {
   eye: require("../../assets/icons/eye.png"),
   mail: require("../../assets/icons/mail.png"),
   camera: require("../../assets/icons/camera.png"),
+  home: require("../../assets/icons/home.png"),
+  profile: require("../../assets/icons/profile.png"),
 }
 
 const $imageStyle: ImageStyle = {

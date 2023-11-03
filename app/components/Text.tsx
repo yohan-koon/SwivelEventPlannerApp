@@ -81,6 +81,7 @@ const $sizeStyles = {
   sm: { fontSize: ms(16), lineHeight: ms(20) } satisfies TextStyle,
   xs: { fontSize: ms(14), lineHeight: ms(20) } satisfies TextStyle,
   xxs: { fontSize: ms(13), lineHeight: ms(16) } satisfies TextStyle,
+  xxxs: { fontSize: ms(11), lineHeight: ms(14) } satisfies TextStyle,
 }
 
 const $fontWeightStyles = Object.entries(typography.primary).reduce((acc, [weight, fontFamily]) => {
@@ -104,13 +105,13 @@ const $presets = {
 
   h3: [$baseStyle, $sizeStyles.lg, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
 
-  h4: [$baseStyle, $sizeStyles.md, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
+  h4: [$baseStyle, $sizeStyles.md, $fontWeightStyles.semiBold, {color: colors.text, fontFamily: typography.secondary.semiBold}] as StyleProp<TextStyle>,
 
   h5: [$baseStyle, $sizeStyles.sm, $fontWeightStyles.semiBold, {color: colors.text}] as StyleProp<TextStyle>,
 
   formLabel: [$baseStyle, $sizeStyles.xxs, $fontWeightStyles.medium, {color: colors.palette.neutral700}] as StyleProp<TextStyle>,
 
-  formHelper: [$baseStyle, $sizeStyles.xxs, $fontWeightStyles.normal] as StyleProp<TextStyle>,
+  formHelper: [$baseStyle, $sizeStyles.xxxs, $fontWeightStyles.normal] as StyleProp<TextStyle>,
 }
 
 const $rtlStyle: TextStyle = isRTL ? { writingDirection: "rtl" } : {}

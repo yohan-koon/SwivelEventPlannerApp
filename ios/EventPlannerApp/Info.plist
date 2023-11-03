@@ -51,5 +51,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to the camera to capture your profile image, which will be used to identify you to other users and to create a personalized experience.</string>
 </dict>
 </plist>

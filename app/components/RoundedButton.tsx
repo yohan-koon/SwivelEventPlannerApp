@@ -1,5 +1,5 @@
 import React, { ComponentType } from "react"
-import { StyleProp, TextStyle, View, ViewStyle, TouchableOpacity, TouchableOpacityProps } from "react-native"
+import { ImageBackground, StyleProp, TextStyle, View, ViewStyle, TouchableOpacity, TouchableOpacityProps } from "react-native"
 import { observer } from "mobx-react-lite"
 import { colors, spacing, typography } from "app/theme"
 import { Text } from "app/components/Text"
@@ -22,13 +22,17 @@ export interface RoundedButtonProps extends TouchableOpacityProps {
    * Accessory component to render on the middle of the button.
    */
   Accessory?: ComponentType<RoundedButtonAccessoryProps>
+  /**
+   * Image source
+   */
+  src?: string
 }
 
 /**
  * Describe your component here
  */
 export const RoundedButton = observer(function RoundedButton(props: RoundedButtonProps) {
-  const { style, size = 116, Accessory, ...rest } = props
+  const { style, size = 116, Accessory, src, ...rest } = props
   const $styles = [$container, style]
 
   const $containerStyle = () => {
@@ -41,7 +45,9 @@ export const RoundedButton = observer(function RoundedButton(props: RoundedButto
 
   return (
     <TouchableOpacity style={$containerStyle()} {...rest}>
+      <ImageBackground src={src} style={$containerStyle()} imageStyle={{borderRadius: ms(size)}} resizeMode='cover'>
       {Accessory && <Accessory style={$rightAccessoryStyle} />}
+      </ImageBackground>
     </TouchableOpacity>
   )
 })

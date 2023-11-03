@@ -34,7 +34,7 @@ const en = {
     restorePassword: "Restore password",
   },
   signUpScreen: {
-    title: "Sign Up",
+    title: "Welcome",
     subTitle: "Welcome to your Portal",
     signUpBtn: "Sign Up",
     loginBtn: "Login",
@@ -54,6 +54,31 @@ const en = {
   profileImageUploadScreen: {
     title: "Welcome",
     subTitle: "You are logged in for the first time and can upload a profile photo",
+  },
+  personalInfoScreen: {
+    title: "Personal Info",
+    subTitle: "You can add your personal data now or do it later",
+    firstNameLabel: "First Name",
+    lastNameLabel: "Last Name",
+    emailLabel: "Email",
+    phoneLabel: "Phone",
+    addressLabel: "Address",
+  },
+  mainNavigator: {
+    home: "Home",
+    profile: "Profile",
+  },
+  firebaseAuth: {
+    emailAlreadyInUse: "That email address is already in use!",
+    invalidEmail: "That email address is invalid!",
+    userCreationError: "There was an error creating your account!",
+  },
+  fetchUserErrors: {
+    userNotFound: "User does not exist!",
+    userFetchError: "There was an error fetching your account!",
+  },
+  profileImageUploadErrors: {
+    uploadError: "There was an error uploading your profile image!",
   }
 }
 
