@@ -8,18 +8,21 @@ import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
-  NavigatorScreenParams, // @demo remove-current-line
+  NavigatorScreenParams,
 } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
 import { observer } from "mobx-react-lite"
-import React from "react"
+import React, { useEffect } from "react"
 import { useColorScheme } from "react-native"
-import * as Screens from "app/screens"
 import Config from "../config"
-import { useStores } from "../models" // @demo remove-current-line
-import { DemoNavigator, DemoTabParamList } from "./DemoNavigator" // @demo remove-current-line
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { colors } from "app/theme"
+import { OnboardingNavigator, OnboardingNavigatorParamList } from "./OnboardingNavigator"
+import { MainNavigator, MainNavigatorParamList } from "./MainNavigator"
+import { UserModel, useStores } from "app/models"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "app/config/firebase.config"
+import { FirebaseApp } from "firebase/app"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -35,10 +38,9 @@ import { colors } from "app/theme"
  *   https://reactnavigation.org/docs/typescript/#organizing-types
  */
 export type AppStackParamList = {
-  Welcome: undefined
-  Login: undefined // @demo remove-current-line
-  Demo: NavigatorScreenParams<DemoTabParamList> // @demo remove-current-line
   // 🔥 Your screens go here
+  Onboarding: NavigatorScreenParams<OnboardingNavigatorParamList>,
+  Main: NavigatorScreenParams<MainNavigatorParamList>
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
@@ -57,39 +59,49 @@ export type AppStackScreenProps<T extends keyof AppStackParamList> = NativeStack
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
 const AppStack = observer(function AppStack() {
-  // @demo remove-block-start
-  const {
-    authenticationStore: { isAuthenticated },
-  } = useStores()
+  const { authenticationStore: { isLoggedIn, isCompletedInitialSetup, setUser } } = useStores();
 
-  // @demo remove-block-end
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (state) => {
+      try {
+        if (state != null && state?.uid && state?.email) {
+          setUser(UserModel.create({
+            uid: state.uid,
+            email: state.email,
+          }));
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
-      initialRouteName={isAuthenticated ? "Welcome" : "Login"} // @demo remove-current-line
     >
-      {/* @demo remove-block-start */}
-      {isAuthenticated ? (
-        <>
-          {/* @demo remove-block-end */}
-          <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} />
-          {/* @demo remove-block-start */}
-          <Stack.Screen name="Demo" component={DemoNavigator} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Login" component={Screens.LoginScreen} />
-        </>
-      )}
-      {/* @demo remove-block-end */}
       {/** 🔥 Your screens go here */}
+      {
+        isLoggedIn && isCompletedInitialSetup ?
+          <>
+            <Stack.Screen name="Main" component={MainNavigator} />
+          </>
+          :
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
+          </>
+      }
+
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
 })
 
 export interface NavigationProps
-  extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
+  extends Partial<React.ComponentProps<typeof NavigationContainer>> { }
 
 export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
   const colorScheme = useColorScheme()

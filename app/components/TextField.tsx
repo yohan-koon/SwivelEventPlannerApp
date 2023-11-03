@@ -11,6 +11,7 @@ import {
 import { isRTL, translate } from "../i18n"
 import { colors, spacing, typography } from "../theme"
 import { Text, TextProps } from "./Text"
+import { vs, ms } from "app/utils/ui"
 
 export interface TextFieldAccessoryProps {
   style: StyleProp<any>
@@ -113,7 +114,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
     helper,
     helperTx,
     helperTxOptions,
-    status,
+    status = "error",
     RightAccessory,
     LeftAccessory,
     HelperTextProps,
@@ -137,7 +138,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
 
   const $inputWrapperStyles = [
     $inputWrapperStyle,
-    status === "error" && { borderColor: colors.error },
+    (helper || helperTx) && { borderColor: colors.error },
     TextInputProps.multiline && { minHeight: 112 },
     LeftAccessory && { paddingStart: 0 },
     RightAccessory && { paddingEnd: 0 },
@@ -154,7 +155,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
 
   const $helperStyles = [
     $helperStyle,
-    status === "error" && { color: colors.error },
+    (helper || helperTx) && { color: colors.error },
     HelperTextProps?.style,
   ]
 
@@ -236,10 +237,9 @@ const $labelStyle: TextStyle = {
 const $inputWrapperStyle: ViewStyle = {
   flexDirection: "row",
   alignItems: "flex-start",
-  borderWidth: 1,
-  borderRadius: 4,
-  backgroundColor: colors.palette.neutral200,
-  borderColor: colors.palette.neutral400,
+  borderBottomWidth: vs(0.5),
+  backgroundColor: colors.palette.primary100,
+  borderColor: colors.border,
   overflow: "hidden",
 }
 
@@ -248,8 +248,8 @@ const $inputStyle: TextStyle = {
   alignSelf: "stretch",
   fontFamily: typography.primary.normal,
   color: colors.text,
-  fontSize: 16,
-  height: 24,
+  fontSize: ms(14),
+  height: vs(24),
   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
   paddingVertical: 0,
   paddingHorizontal: 0,
@@ -258,18 +258,18 @@ const $inputStyle: TextStyle = {
 }
 
 const $helperStyle: TextStyle = {
-  marginTop: spacing.xs,
+  marginTop: spacing.xxs,
 }
 
 const $rightAccessoryStyle: ViewStyle = {
   marginEnd: spacing.xs,
-  height: 40,
+  height: vs(40),
   justifyContent: "center",
   alignItems: "center",
 }
 const $leftAccessoryStyle: ViewStyle = {
   marginStart: spacing.xs,
-  height: 40,
+  height: vs(40),
   justifyContent: "center",
   alignItems: "center",
 }

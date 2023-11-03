@@ -1,37 +1,54 @@
-import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { Instance, SnapshotIn, SnapshotOut, types } from "mobx-state-tree"
+import { withSetPropAction } from "./helpers/withSetPropAction"
+import { User, UserModel, createUserDefaultModel } from "./User"
+import { fetchUser } from "app/services/firebase"
+import { translate } from "app/i18n"
+import { set } from "firebase/database"
 
+/**
+ * Model description here for TypeScript hints.
+ */
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
   .props({
-    authToken: types.maybe(types.string),
-    authEmail: "",
+    user: types.optional(UserModel, {}),
+    isLoggedIn: types.optional(types.boolean, false),
+    isCompletedInitialSetup: types.optional(types.boolean, false),
   })
-  .views((store) => ({
-    get isAuthenticated() {
-      return !!store.authToken
+  .actions(withSetPropAction)
+  .actions((self) => ({
+    async setAuthState(isLoggedIn: boolean, isCompletedInitialSetup: boolean, user: any){
+      self.user = user || UserModel.create({})
+      self.isLoggedIn = isLoggedIn
+      self.isCompletedInitialSetup = isCompletedInitialSetup
     },
-    get validationError() {
-      if (store.authEmail.length === 0) return "can't be blank"
-      if (store.authEmail.length < 6) return "must be at least 6 characters"
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(store.authEmail))
-        return "must be a valid email address"
-      return ""
-    },
+    
   }))
-  .actions((store) => ({
-    setAuthToken(value?: string) {
-      store.authToken = value
+  .views((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
+  .actions((self) => ({
+    async setUser(firebaseAuthUser: any){
+      try{
+        if(!firebaseAuthUser){
+          self.setAuthState(false, false, null)
+        }else if(firebaseAuthUser){
+          // Check if user exists in Firestore
+          const firestoreUser: User = await fetchUser(firebaseAuthUser.uid);
+          if(!firestoreUser){
+            self.setAuthState(true, false, null)
+          }else{
+            self.setAuthState(true, firestoreUser?.firstName && firestoreUser?.firstName != '' ? true : false , firestoreUser)
+          }
+        }
+      }catch(error){
+        throw new Error(translate('firebaseAuth.userCreationError'))
+      }
     },
-    setAuthEmail(value: string) {
-      store.authEmail = value.replace(/ /g, "")
-    },
-    logout() {
-      store.authToken = undefined
-      store.authEmail = ""
-    },
-  }))
+    async setFirestoreUser(firestoreUser: User){
+      self.setAuthState(true, firestoreUser?.firstName && firestoreUser?.firstName != '' ? true : false , firestoreUser)
+    }
+  })) // eslint-disable-line @typescript-eslint/no-unused-vars
 
 export interface AuthenticationStore extends Instance<typeof AuthenticationStoreModel> {}
-export interface AuthenticationStoreSnapshot extends SnapshotOut<typeof AuthenticationStoreModel> {}
-
-// @demo remove-file
+export interface AuthenticationStoreSnapshotOut extends SnapshotOut<typeof AuthenticationStoreModel> {}
+export interface AuthenticationStoreSnapshotIn extends SnapshotIn<typeof AuthenticationStoreModel> {}
+export const createAuthenticationStoreDefaultModel = () => types.optional(AuthenticationStoreModel, {})
