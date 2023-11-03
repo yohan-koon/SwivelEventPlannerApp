@@ -45,9 +45,9 @@ export const RoundedButton = observer(function RoundedButton(props: RoundedButto
 
   return (
     <TouchableOpacity style={$containerStyle()} {...rest}>
-      <ImageBackground src={src} style={$containerStyle()} imageStyle={{borderRadius: ms(size)}} resizeMode='cover'>
+      {/* <ImageBackground src={src} style={$containerStyle()} imageStyle={{borderRadius: ms(size)}} resizeMode='cover'> */}
       {Accessory && <Accessory style={$rightAccessoryStyle} />}
-      </ImageBackground>
+      {/* </ImageBackground> */}
     </TouchableOpacity>
   )
 })

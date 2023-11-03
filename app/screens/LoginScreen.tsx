@@ -89,7 +89,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen()
       preset="scroll"
       safeAreaEdges={["top", "bottom"]}
     >
-      <Formik initialValues={initialFormValues} onSubmit={(values) => {
+      <Formik initialValues={initialFormValues} validationSchema={getLoginFormValidationSchema()} onSubmit={(values) => {
         console.log({ values })
         navigation?.navigate('ProfileImageUpload')
       }}>

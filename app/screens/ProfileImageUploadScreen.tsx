@@ -89,7 +89,6 @@ export const ProfileImageUploadScreen: FC<ProfileImageUploadScreenProps> = obser
             style={$imageUploaderButton}
             Accessory={CameraButtonAccessory}
             onPress={captureImage}
-            src={profileImage}
           />
         </View>
         <Button
