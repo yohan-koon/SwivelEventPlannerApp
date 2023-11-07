@@ -13,6 +13,7 @@ import {
   ViewStyle,
 } from "react-native"
 import { colors } from "../theme"
+import Spinner from 'react-native-loading-spinner-overlay';
 import { ExtendedEdge, useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
 
 interface BaseScreenProps {
@@ -48,6 +49,10 @@ interface BaseScreenProps {
    * Pass any additional props directly to the StatusBar component.
    */
   StatusBarProps?: StatusBarProps
+  /**
+   * Show spinner
+   */
+  isVisibleSpinner?: boolean
   /**
    * Pass any additional props directly to the KeyboardAvoidingView component.
    */
@@ -88,7 +93,7 @@ function isNonScrolling(preset?: ScreenProps["preset"]) {
 }
 
 function useAutoPreset(props: AutoScreenProps) {
-  const { preset, scrollEnabledToggleThreshold } = props
+  const { preset, scrollEnabledToggleThreshold} = props
   const { percent = 0.92, point = 0 } = scrollEnabledToggleThreshold || {}
 
   const scrollViewHeight = useRef(null)
@@ -195,6 +200,7 @@ export function Screen(props: ScreenProps) {
     safeAreaEdges,
     StatusBarProps,
     statusBarStyle = "dark",
+    isVisibleSpinner = false,
   } = props
 
   const $containerInsets = useSafeAreaInsetsStyle(safeAreaEdges)
@@ -215,6 +221,11 @@ export function Screen(props: ScreenProps) {
           <ScreenWithScrolling {...props} />
         )}
       </KeyboardAvoidingView>
+      <Spinner
+          visible={isVisibleSpinner}
+          textContent={'Loading...'}
+          // textStyle={styles.spinnerTextStyle}
+        />
     </View>
   )
 }

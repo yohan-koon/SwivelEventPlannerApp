@@ -1,17 +1,26 @@
-import React, { FC, useMemo, useRef, useState } from "react"
+import React, { FC, useEffect, useMemo, useRef, useState } from "react"
 import { observer } from "mobx-react-lite"
-import { TouchableOpacity, View, ViewStyle } from "react-native"
+import { Alert, TouchableOpacity, View, ViewStyle } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AppStackScreenProps, OnboardingStackScreenProps } from "app/navigators"
-import { ButtonAccessoryProps, Icon, Screen, Spacer, Text, TextField, TextFieldAccessoryProps, Button } from "app/components"
+import {
+  ButtonAccessoryProps,
+  Icon,
+  Screen,
+  Spacer,
+  Text,
+  TextField,
+  TextFieldAccessoryProps,
+  Button,
+} from "app/components"
 import { spacing } from "app/theme"
 import { ms } from "../utils/ui"
 import { Formik } from "formik"
 import { getSignUpFormValidationSchema } from "app/validators/schemas"
-// import { useNavigation } from "@react-navigation/native"
-// import { useStores } from "app/models"
+import { useNavigation } from "@react-navigation/native"
+import { useStores } from "app/models"
 
-interface SignUpScreenProps extends NativeStackScreenProps<OnboardingStackScreenProps<"SignUp">> { }
+interface SignUpScreenProps extends NativeStackScreenProps<OnboardingStackScreenProps<"SignUp">> {}
 
 interface SignUpFormValues {
   email: string
@@ -19,13 +28,14 @@ interface SignUpFormValues {
   confirmPassword: string
 }
 
-export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScreen(_props) {
+export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScreen() {
   // Pull in one of our MST stores
-  // const { someStore, anotherStore } = useStores()
+  const {
+    userRegistrationStore: { signUpIsLoading, signUpError, user, registerUser },
+  } = useStores()
 
   // Pull in navigation via hook
-  // const navigation = useNavigation()
-  const {navigation} = _props
+  const navigation = useNavigation()
 
   const passwordRef = useRef(null)
   const confirmPasswordRef = useRef(null)
@@ -38,42 +48,66 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
     confirmPassword: "",
   }
 
+  useEffect(() => {
+    if(signUpIsLoading) {return};
+    if(signUpError) {
+      console.log({signUpError, signUpIsLoading, user})
+      return Alert.alert("Error", signUpError)
+    };
+    if(!signUpError && user?.uid !== '' && user?.email !== '' ) {
+      console.log({user})
+      navigation.navigate("ProfileImageUpload");
+    }
+  }, [
+    signUpError, user
+  ])
+
   //Email Icon for Email TextField
   const EmailLeftAccessory: FC<TextFieldAccessoryProps> = useMemo(
-    () => function EmailLeftAccessory(props: TextFieldAccessoryProps) {
-      return <Icon icon="mail" size={ms(18)} {...props} />},
+    () =>
+      function EmailLeftAccessory(props: TextFieldAccessoryProps) {
+        return <Icon icon="mail" size={ms(18)} {...props} />
+      },
     [],
   )
   //Password Icon for Password TextField
   const PasswordLeftAccessory: FC<TextFieldAccessoryProps> = useMemo(
-    () => function PasswordLeftAccessory(props: TextFieldAccessoryProps) {
-      return <Icon icon="lock" size={ms(15)} {...props} />},
+    () =>
+      function PasswordLeftAccessory(props: TextFieldAccessoryProps) {
+        return <Icon icon="lock" size={ms(15)} {...props} />
+      },
     [],
   )
   //ClosedEye / Eye Icon for Password TextField
   const PasswordRightAccessory: FC<TextFieldAccessoryProps> = useMemo(
-    () => function PasswordLeftAccessory(props: TextFieldAccessoryProps) {
-      return (
-      <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-        <Icon icon={isPasswordVisible ? "eye" : "closedEye"} size={ms(15)} {...props} />
-      </TouchableOpacity>
-    )},
+    () =>
+      function PasswordLeftAccessory(props: TextFieldAccessoryProps) {
+        return (
+          <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+            <Icon icon={isPasswordVisible ? "eye" : "closedEye"} size={ms(15)} {...props} />
+          </TouchableOpacity>
+        )
+      },
     [isPasswordVisible],
   )
   //ClosedEye / Eye Icon for Password TextField
   const ConfirmPasswordRightAccessory: FC<TextFieldAccessoryProps> = useMemo(
-    () => function ConfirmPasswordRightAccessory(props: TextFieldAccessoryProps) {
-      return  (
-      <TouchableOpacity onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}>
-        <Icon icon={isConfirmPasswordVisible ? "eye" : "closedEye"} size={ms(15)} {...props} />
-      </TouchableOpacity>
-    )},
+    () =>
+      function ConfirmPasswordRightAccessory(props: TextFieldAccessoryProps) {
+        return (
+          <TouchableOpacity onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}>
+            <Icon icon={isConfirmPasswordVisible ? "eye" : "closedEye"} size={ms(15)} {...props} />
+          </TouchableOpacity>
+        )
+      },
     [isConfirmPasswordVisible],
   )
   //Next Icon for Login and SignUp Buttons
   const ButtonRightAccessory: FC<ButtonAccessoryProps> = useMemo(
-    () => function ButtonRightAccessory(props: ButtonAccessoryProps) {
-      return  <Icon icon="next" size={ms(13.5)} {...props} />},
+    () =>
+      function ButtonRightAccessory(props: ButtonAccessoryProps) {
+        return <Icon icon="next" size={ms(13.5)} {...props} />
+      },
     [],
   )
 
@@ -82,9 +116,14 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
       style={$root}
       contentContainerStyle={$contentContainer}
       preset="scroll"
-      safeAreaEdges={["top"]}
+      safeAreaEdges={["top", "bottom"]}
+      isVisibleSpinner={signUpIsLoading}
     >
-      <Formik initialValues={initialFormValues} validationSchema={getSignUpFormValidationSchema()} onSubmit={(values) => console.log({ values })}>
+      <Formik
+        initialValues={initialFormValues}
+        validationSchema={getSignUpFormValidationSchema}
+        onSubmit={(values) => registerUser(values)}
+      >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <>
             <View style={$topContainer}>
@@ -100,7 +139,9 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
                   LeftAccessory={EmailLeftAccessory}
                   keyboardType="email-address"
                   returnKeyType="next"
-                  onSubmitEditing={() => { passwordRef.current?.focus() }}
+                  onSubmitEditing={() => {
+                    passwordRef.current?.focus()
+                  }}
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
                   value={values.email}
@@ -115,7 +156,9 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
                   LeftAccessory={PasswordLeftAccessory}
                   RightAccessory={PasswordRightAccessory}
                   returnKeyType="next"
-                  onSubmitEditing={() => { confirmPasswordRef.current?.focus() }}
+                  onSubmitEditing={() => {
+                    confirmPasswordRef.current?.focus()
+                  }}
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                   value={values.password}
@@ -130,11 +173,17 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
                   LeftAccessory={PasswordLeftAccessory}
                   RightAccessory={ConfirmPasswordRightAccessory}
                   returnKeyType="done"
-                  onSubmitEditing={() => { handleSubmit() }}
+                  onSubmitEditing={() => {
+                    handleSubmit()
+                  }}
                   onChangeText={handleChange("confirmPassword")}
                   onBlur={handleBlur("confirmPassword")}
                   value={values.confirmPassword}
-                  helper={touched.confirmPassword && errors.confirmPassword ? errors.confirmPassword : undefined}
+                  helper={
+                    touched.confirmPassword && errors.confirmPassword
+                      ? errors.confirmPassword
+                      : undefined
+                  }
                 />
               </View>
             </View>
@@ -145,14 +194,18 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
                 onPress={() => handleSubmit()}
               />
               <Spacer mainAxisSize={spacing.md} />
-              <Button tx="signUpScreen.loginBtn" RightAccessory={ButtonRightAccessory} onPress={() => navigation.goBack()}/>
+              <Button
+                tx="signUpScreen.loginBtn"
+                RightAccessory={ButtonRightAccessory}
+                onPress={() => navigation.goBack()}
+              />
             </View>
           </>
         )}
       </Formik>
-    </Screen>)
+    </Screen>
+  )
 })
-
 
 const $root: ViewStyle = {
   flex: 1,

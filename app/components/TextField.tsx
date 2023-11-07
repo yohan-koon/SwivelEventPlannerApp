@@ -138,7 +138,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
 
   const $inputWrapperStyles = [
     $inputWrapperStyle,
-    status === "error" && { borderColor: colors.error },
+    (helper || helperTx) && { borderColor: colors.error },
     TextInputProps.multiline && { minHeight: 112 },
     LeftAccessory && { paddingStart: 0 },
     RightAccessory && { paddingEnd: 0 },
@@ -155,7 +155,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
 
   const $helperStyles = [
     $helperStyle,
-    status === "error" && { color: colors.error },
+    (helper || helperTx) && { color: colors.error },
     HelperTextProps?.style,
   ]
 
@@ -237,7 +237,7 @@ const $labelStyle: TextStyle = {
 const $inputWrapperStyle: ViewStyle = {
   flexDirection: "row",
   alignItems: "flex-start",
-  borderBottomWidth: vs(0.2),
+  borderBottomWidth: vs(0.5),
   backgroundColor: colors.palette.primary100,
   borderColor: colors.border,
   overflow: "hidden",
@@ -258,7 +258,7 @@ const $inputStyle: TextStyle = {
 }
 
 const $helperStyle: TextStyle = {
-  marginTop: spacing.xs,
+  marginTop: spacing.xxs,
 }
 
 const $rightAccessoryStyle: ViewStyle = {
