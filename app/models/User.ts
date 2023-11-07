@@ -14,6 +14,8 @@ export const UserModel = types
     phoneNumber: types.optional(types.string, ''),
     address: types.optional(types.string, ''),
     profileImage: types.optional(types.string, ''),
+    createdAt: types.optional(types.Date, new Date()),
+    updatedAt: types.optional(types.Date, new Date()),
   })
   .actions(withSetPropAction)
   .actions((self) => ({

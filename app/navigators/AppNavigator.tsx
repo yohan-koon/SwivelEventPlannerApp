@@ -61,38 +61,33 @@ const Stack = createNativeStackNavigator<AppStackParamList>()
 const AppStack = observer(function AppStack() {
   const { authenticationStore: { isLoggedIn, isCompletedInitialSetup, setUser } } = useStores();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (state) => {
-      try {
-        if (state != null && state?.uid && state?.email) {
-          setUser(UserModel.create({
-            uid: state.uid,
-            email: state.email,
-          }));
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (state) => {
+  //     try {
+  //       if (state != null && state?.uid && state?.email) {
+  //         setUser(UserModel.create({
+  //           uid: state.uid,
+  //           email: state.email,
+  //         }));
+  //       } else {
+  //         setUser(null);
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   });
+  //   return () => unsubscribe();
+  // }, []);
 
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, navigationBarColor: colors.background }}
     >
       {/** 🔥 Your screens go here */}
-      {
-        isLoggedIn && isCompletedInitialSetup ?
-          <>
-            <Stack.Screen name="Main" component={MainNavigator} />
-          </>
-          :
-          <>
-            <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
-          </>
+      {isLoggedIn && isCompletedInitialSetup ? 
+        <Stack.Screen name="Main" component={MainNavigator} />
+        :
+        <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
       }
 
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}

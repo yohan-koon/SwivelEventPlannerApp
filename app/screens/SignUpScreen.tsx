@@ -1,6 +1,6 @@
-import React, { FC, useMemo, useRef, useState } from "react"
+import React, { FC, useEffect, useMemo, useRef, useState } from "react"
 import { observer } from "mobx-react-lite"
-import { TouchableOpacity, View, ViewStyle } from "react-native"
+import { Alert, TouchableOpacity, View, ViewStyle } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AppStackScreenProps, OnboardingStackScreenProps } from "app/navigators"
 import {
@@ -31,7 +31,7 @@ interface SignUpFormValues {
 export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScreen() {
   // Pull in one of our MST stores
   const {
-    userRegistrationStore: { isLoading, error, registerUser },
+    userRegistrationStore: { signUpIsLoading, signUpError, user, registerUser },
   } = useStores()
 
   // Pull in navigation via hook
@@ -47,6 +47,20 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
     password: "",
     confirmPassword: "",
   }
+
+  useEffect(() => {
+    if(signUpIsLoading) {return};
+    if(signUpError) {
+      console.log({signUpError, signUpIsLoading, user})
+      return Alert.alert("Error", signUpError)
+    };
+    if(!signUpError && user?.uid !== '' && user?.email !== '' ) {
+      console.log({user})
+      navigation.navigate("ProfileImageUpload");
+    }
+  }, [
+    signUpError, user
+  ])
 
   //Email Icon for Email TextField
   const EmailLeftAccessory: FC<TextFieldAccessoryProps> = useMemo(
@@ -103,7 +117,7 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
       contentContainerStyle={$contentContainer}
       preset="scroll"
       safeAreaEdges={["top", "bottom"]}
-      isVisibleSpinner={isLoading}
+      isVisibleSpinner={signUpIsLoading}
     >
       <Formik
         initialValues={initialFormValues}
