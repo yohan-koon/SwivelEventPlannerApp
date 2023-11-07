@@ -1,9 +1,9 @@
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { UserCredential, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db, storage } from '../../config/firebase.config';
 import { translate } from 'app/i18n';
 import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { User } from 'app/models/User';
+import { getDownloadURL, ref, uploadBytes, uploadString } from 'firebase/storage';
+import { User, UserModel } from 'app/models/User';
 import { get } from 'firebase/database';
 
 /**
@@ -12,7 +12,7 @@ import { get } from 'firebase/database';
  * @param password Password
  * @returns Firebase user
  */
-export const createFirebaseUser = async (values: { email: string, password: string }) => {
+export const registerUser = async (values: { email: string, password: string }) => {
     try {
         // Create user in Firebase
         const response = await createUserWithEmailAndPassword(auth, values.email, values.password);
@@ -23,9 +23,10 @@ export const createFirebaseUser = async (values: { email: string, password: stri
         }
 
         // Create user in Firestore
-        const firestoreUserCreationResult = await createUserInFirestore(response.user, values);
-        return firestoreUserCreationResult;
+        const newUser = await createUser(response, values);
+        return newUser;
     } catch (error) {
+        console.log({ error })
         // Handle errors
         if (error.code === 'auth/email-already-in-use') {
             throw new Error(translate('firebaseAuth.emailAlreadyInUse'));
@@ -44,15 +45,17 @@ export const createFirebaseUser = async (values: { email: string, password: stri
  * @param user Firebase user
  * @param values Form values
  */
-const createUserInFirestore = async (user: any, values: { email: string }) => {
+const createUser = async (userCredential: UserCredential, values: { email: string }) => {
     try {
+        const {user} = userCredential;
         // Create user object
-        const userObject = {
+
+        const userObject: User = UserModel.create({
             uid: user.uid,
             email: values.email.toLowerCase(),
             createdAt: new Date(),
             updatedAt: new Date(),
-        };
+        });
 
         // Create user in Firestore
         await setDoc(doc(db, 'users', user.uid), userObject);
@@ -90,6 +93,7 @@ export const fetchUser = async (uid: string): Promise<User> => {
  * 
  */
 export const uploadProfileImage = async (file, user: User) => {
+    console.log({ file, user })
     try {
         // Create a storage reference from our storage service
         const storageRef = ref(storage, `users/${user.uid}/profile-image`);

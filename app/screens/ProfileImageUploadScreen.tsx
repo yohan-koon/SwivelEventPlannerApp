@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState, useEffect } from "react"
 import { observer } from "mobx-react-lite"
-import { ViewStyle, View, TextStyle } from "react-native"
+import { ViewStyle, View, TextStyle, Alert } from "react-native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { AppStackScreenProps, OnboardingStackScreenProps } from "app/navigators"
 import {
@@ -18,7 +18,6 @@ import { launchCamera } from "react-native-image-picker"
 import { ms } from "app/utils/ui"
 import { spacing } from "app/theme"
 import { useStores } from "app/models"
-import { set } from "firebase/database"
 
 interface ProfileImageUploadScreenProps
   extends NativeStackScreenProps<OnboardingStackScreenProps<"ProfileImageUpload">> {}
@@ -27,14 +26,24 @@ export const ProfileImageUploadScreen: FC<ProfileImageUploadScreenProps> = obser
   function ProfileImageUploadScreen() {
     // Pull in one of our MST stores
     const {
-      userRegistrationStore: { isLoading, error, uploadProfileImage },
-      authenticationStore: { user, setFirestoreUser },
+      userRegistrationStore: { imageUploadIsLoading, imageUploadError, uploadProfileImage, user },
     } = useStores()
 
     // Pull in navigation via hook
     const navigation = useNavigation<ProfileImageUploadScreenProps>()
 
     const [profileImage, setProfileImage] = useState(null)
+
+    useEffect(() => {
+      if (imageUploadIsLoading) return;
+      if (imageUploadError) {
+        return Alert.alert("Error", imageUploadError)
+      }
+      if(user?.uid !== '' && user?.profileImage !== '') {
+        console.log({user})
+        //navigation.navigate("PersonalInfo")
+      }
+    }, [user])
 
     //Camera Icon for ImageUploader Button
     const CameraButtonAccessory: FC<RoundedButtonAccessoryProps> = useMemo(
@@ -60,12 +69,13 @@ export const ProfileImageUploadScreen: FC<ProfileImageUploadScreenProps> = obser
         maxWidth: 512,
         maxHeight: 512,
         quality: 1,
+        includeBase64: true,
       })
-      
-      const response = await uploadProfileImage(result.assets[0], user)
-      setFirestoreUser(response)
-      setProfileImage(response.profileImage)
-      console.log("Response: ", {response})
+      console.log({result})
+      uploadProfileImage(result.assets[0], user)
+      //setFirestoreUser(response)
+      //setProfileImage(response.profileImage)
+      //console.log("Response: ", {response})
     }
 
     const navigateToPersonalInfoScreen = () => {
@@ -78,6 +88,7 @@ export const ProfileImageUploadScreen: FC<ProfileImageUploadScreenProps> = obser
         preset="scroll"
         safeAreaEdges={["top", "bottom"]}
         contentContainerStyle={$contentContainer}
+        isVisibleSpinner={imageUploadIsLoading}
       >
         <View style={$topContainer}>
           <View style={$titleContainer}>

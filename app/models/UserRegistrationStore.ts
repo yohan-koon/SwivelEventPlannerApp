@@ -1,6 +1,6 @@
 import { Instance, SnapshotIn, SnapshotOut, types } from "mobx-state-tree"
 import { withSetPropAction } from "./helpers/withSetPropAction"
-import { createFirebaseUser, uploadProfileImage } from "app/services/firebase"
+import { registerUser, uploadProfileImage } from "app/services/firebase"
 import { User, UserModel } from "./User"
 
 /**
@@ -9,43 +9,47 @@ import { User, UserModel } from "./User"
 export const UserRegistrationStoreModel = types
   .model("UserRegistrationStore")
   .props({
-    isLoading: types.optional(types.boolean, false),
-    error: types.optional(types.string, ''),
+    signUpIsLoading: types.optional(types.boolean, false),
+    signUpError: types.optional(types.string, ''),
+    user: types.optional(UserModel, {}),
+    imageUploadIsLoading: types.optional(types.boolean, false),
+    imageUploadError: types.optional(types.string, ''),
   })
   .actions(withSetPropAction)
   .actions((self) => ({
-    reset() {
-      self.isLoading = false
-      self.error = ''
+    resetSignUp() {
+      self.signUpIsLoading = false
+      self.signUpError = ''
     },
-    setIsLoading(isLoading: boolean) {
-      self.isLoading = isLoading
+    setSignUpStatus(isLoading: boolean, error?: string, user?: User) {
+      self.signUpIsLoading = isLoading
+      self.signUpError = error
+      if(user) {self.user  = user;}
     },
-    setError(error: string) {
-      self.error = error
+    setImageUploadStatus(isLoading: boolean, error?: string, user?: User) {
+      self.imageUploadIsLoading = isLoading
+      self.imageUploadError = error
+      if(user){self.user = user}
     }
   }))
   .views((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
   .actions((self) => ({
     async registerUser(values: { email: string, password: string }) {
-      self.setIsLoading(true)
+      self.setSignUpStatus(true)
       try {
-        await createFirebaseUser(values);
+        const newUser = await registerUser(values);
+        self.setSignUpStatus(false, '', newUser)
       } catch (error) {
-        self.setError(error.message)
-      }finally{
-        self.setIsLoading(false)
+        self.setSignUpStatus(false, error.message)
       }
     },
     async uploadProfileImage(file: any, user: User) {
-      self.setIsLoading(true)
+      self.setImageUploadStatus(true)
       try {
         const updatedUser = await uploadProfileImage(file, user);
-        return updatedUser;
+        self.setImageUploadStatus(false, '', updatedUser)
       } catch (error) {
-        self.setError(error.message)
-      }finally{
-        self.setIsLoading(false)
+        self.setImageUploadStatus(false, error.message)
       }
     }
   })) // eslint-disable-line @typescript-eslint/no-unused-vars
